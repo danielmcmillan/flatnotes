@@ -35,6 +35,13 @@ def re_extract(pattern, string) -> Tuple[str, List[str]]:
 
 def is_valid_filename(filename):
     r"""Return False if the declared filename contains any of the following
-    characters: <>:"/\|?*"""
-    invalid_chars = r'<>:"/\|?*'
-    return not any(invalid_char in filename for invalid_char in invalid_chars)
+    characters: <>:"\|?*, or if any path segment is empty, '.', or '..'."""
+    invalid_chars = r'<>:"\|?*'
+    if any(invalid_char in filename for invalid_char in invalid_chars):
+        return False
+
+    for segment in filename.split('/'):
+        if segment in ['', '.', '..']:
+            return False
+
+    return True

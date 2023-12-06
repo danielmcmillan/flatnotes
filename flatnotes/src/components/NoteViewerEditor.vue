@@ -165,7 +165,7 @@ import api from "../api";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all.js";
 import { extendedAutolinks } from "../autolinkParsers";
 
-const reservedFilenameCharacters = /[<>:"/\\|?*]/;
+const reservedFilenameCharacters = /[<>:"\\|?*]/;
 
 const customHTMLRenderer = {
   heading(node, { entering, getChildrenText }) {
@@ -244,7 +244,7 @@ export default {
   methods: {
     badFilenameToast: function (invalidItem) {
       this.$bvToast.toast(
-        `Invalid ${invalidItem}. Due to filename restrictions, the following characters are not allowed: <>:"/\\|?*`,
+        `Invalid ${invalidItem}. Due to filename restrictions, the following characters are not allowed: <>:"\\|?*`,
         {
           variant: "danger",
           noCloseButton: true,
@@ -423,7 +423,12 @@ export default {
         return;
       }
 
-      if (reservedFilenameCharacters.test(this.titleInput)) {
+      if (
+        reservedFilenameCharacters.test(this.titleInput) ||
+        this.titleInput
+          .split("/")
+          .some((segment) => ["", ".", ".."].includes(segment))
+      ) {
         this.badFilenameToast("title");
         return;
       }

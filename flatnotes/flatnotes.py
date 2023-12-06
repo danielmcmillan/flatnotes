@@ -55,6 +55,7 @@ class Note:
         if not new and not exists:
             raise FileNotFoundError
         if new:
+            os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
             open(self.filepath, "w").close()
 
     @property
@@ -63,7 +64,7 @@ class Note:
 
     @property
     def filename(self):
-        return self._title + MARKDOWN_EXT
+        return os.path.normpath(self._title) + MARKDOWN_EXT
 
     @property
     def last_modified(self):
@@ -82,6 +83,7 @@ class Note:
         new_filepath = os.path.join(
             self._flatnotes.dir, new_title + MARKDOWN_EXT
         )
+        os.makedirs(os.path.dirname(new_filepath), exist_ok=True)
         os.rename(self.filepath, new_filepath)
         self._title = new_title
 
@@ -229,9 +231,10 @@ class Flatnotes(object):
         """Return a list containing a Note object for every file in the notes
         directory."""
         return [
-            Note(self, strip_ext(os.path.split(filepath)[1]))
+            Note(self, os.path.relpath(strip_ext(filepath.replace(os.sep, "/")), self.dir))
             for filepath in glob.glob(
-                os.path.join(self.dir, "*" + MARKDOWN_EXT)
+                os.path.join(self.dir, "**/*" + MARKDOWN_EXT),
+                recursive=True,
             )
         ]
 

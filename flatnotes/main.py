@@ -98,7 +98,7 @@ if config.auth_type not in [AuthType.NONE, AuthType.READ_ONLY]:
 @app.get("/login", include_in_schema=False)
 @app.get("/search", include_in_schema=False)
 @app.get("/new", include_in_schema=False)
-@app.get("/note/{title}", include_in_schema=False)
+@app.get("/note/{title:path}", include_in_schema=False)
 def root(title: str = ""):
     with open("flatnotes/dist/index.html", "r", encoding="utf-8") as f:
         html = f.read()
@@ -125,7 +125,7 @@ if config.auth_type != AuthType.READ_ONLY:
 
 
 @app.get(
-    "/api/notes/{title}",
+    "/api/notes/{title:path}",
     dependencies=[Depends(authenticate)],
     response_model=Union[NoteContentResponseModel, NoteResponseModel],
 )
@@ -149,7 +149,7 @@ def get_note(
 if config.auth_type != AuthType.READ_ONLY:
 
     @app.patch(
-        "/api/notes/{title}",
+        "/api/notes/{title:path}",
         dependencies=[Depends(authenticate)],
         response_model=NoteContentResponseModel,
     )
@@ -172,7 +172,7 @@ if config.auth_type != AuthType.READ_ONLY:
 if config.auth_type != AuthType.READ_ONLY:
 
     @app.delete(
-        "/api/notes/{title}",
+        "/api/notes/{title:path}",
         dependencies=[Depends(authenticate)],
         response_model=None,
     )

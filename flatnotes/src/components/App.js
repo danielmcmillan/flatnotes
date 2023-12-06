@@ -102,7 +102,7 @@ export default {
 
       // Note
       else if (basePath == constants.basePaths.note) {
-        this.noteTitle = decodeURIComponent(path[2]);
+        this.noteTitle = path.slice(2).map(decodeURIComponent).join("/");
         this.updateDocumentTitle(this.noteTitle);
         this.currentView = this.views.note;
       }
